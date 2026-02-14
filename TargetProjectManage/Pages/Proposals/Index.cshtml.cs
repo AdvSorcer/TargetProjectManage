@@ -93,8 +93,7 @@ namespace TargetProjectManage.Pages.Proposals
                 summaryRow++;
 
                 worksheet.Cell($"A{summaryRow}").Value = "平均預算：";
-                worksheet.Cell($"B{summaryRow}").Value = proposals.Average(p => p.Budget);
-                worksheet.Cell($"B{summaryRow}").Style.NumberFormat.Format = "NT$ #,##0";
+                worksheet.Cell($"B{summaryRow}").Value = $"NT$ {proposals.Average(p => p.Budget):N0}";
                 summaryRow++;
 
                 worksheet.Cell($"A{summaryRow}").Value = "開發時程範圍：";
@@ -102,8 +101,7 @@ namespace TargetProjectManage.Pages.Proposals
                 summaryRow++;
 
                 worksheet.Cell($"A{summaryRow}").Value = "平均開發時程：";
-                worksheet.Cell($"B{summaryRow}").Value = proposals.Average(p => p.DurationMonths);
-                worksheet.Cell($"B{summaryRow}").Style.NumberFormat.Format = "0.0 個月";
+                worksheet.Cell($"B{summaryRow}").Value = $"{proposals.Average(p => p.DurationMonths):0.0} 個月";
                 summaryRow += 2;
             }
 
@@ -120,30 +118,29 @@ namespace TargetProjectManage.Pages.Proposals
             worksheet.Cell($"D{headerRow}").Value = "提出日期";
             worksheet.Cell($"E{headerRow}").Value = "評語";
 
-            // 設定表頭樣式
-            var headerRange = worksheet.Range($"A{headerRow}:E{headerRow}");
-            headerRange.Style.Font.Bold = true;
-            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
-            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-
-            // 提案明細資料
+            // 提案明細資料（先填資料，樣式用範圍統一設定以減少 styles.xml 問題）
             var dataRow = headerRow + 1;
             foreach (var proposal in proposals)
             {
                 worksheet.Cell($"A{dataRow}").Value = proposal.VendorName;
-                worksheet.Cell($"B{dataRow}").Value = proposal.Budget;
-                worksheet.Cell($"B{dataRow}").Style.NumberFormat.Format = "NT$ #,##0";
-                worksheet.Cell($"C{dataRow}").Value = proposal.DurationMonths;
-                worksheet.Cell($"C{dataRow}").Style.NumberFormat.Format = "0 個月";
+                worksheet.Cell($"B{dataRow}").Value = $"NT$ {proposal.Budget:N0}";
+                worksheet.Cell($"C{dataRow}").Value = $"{proposal.DurationMonths} 個月";
                 worksheet.Cell($"D{dataRow}").Value = proposal.SubmitDate.ToString("yyyy-MM-dd");
                 worksheet.Cell($"E{dataRow}").Value = proposal.Comment ?? "";
                 dataRow++;
             }
 
-            // 設定資料範圍樣式
-            var dataRange = worksheet.Range($"A{headerRow}:E{dataRow - 1}");
-            dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            var lastDataRow = dataRow - 1;
+            var tableRange = worksheet.Range(headerRow, 1, lastDataRow, 5);
+
+            // 表頭樣式：粗體、底色（只套表頭列）
+            var headerRange = worksheet.Range(headerRow, 1, headerRow, 5);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+
+            // 整張表邊框一次設定
+            tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
             // 自動調整欄寬
             worksheet.Columns().AdjustToContents();
