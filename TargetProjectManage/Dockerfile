@@ -2,31 +2,6 @@
 
 # 此階段用於以快速模式從 VS 執行時 (偵錯設定的預設值)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-# 安裝 PuppeteerSharp 所需的依賴
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    ca-certificates \
-    procps \
-    libxss1 \
-    libxrandr2 \
-    libasound2t64 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrender1 \
-    libxtst6 \
-    libnss3 \
-    libcups2 \
-    && rm -rf /var/lib/apt/lists/*
 
 USER $APP_UID
 WORKDIR /app

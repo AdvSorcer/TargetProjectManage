@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
-using TargetProjectManage.Services;
 using ClosedXML.Excel;
 
 namespace TargetProjectManage.Pages.Schedules
@@ -14,12 +13,10 @@ namespace TargetProjectManage.Pages.Schedules
     public class IndexModel : PageModel
     {
         private readonly ProjectManageContext _context;
-        private readonly IPdfService _pdfService;
-        
-        public IndexModel(ProjectManageContext context, IPdfService pdfService)
+
+        public IndexModel(ProjectManageContext context)
         {
             _context = context;
-            _pdfService = pdfService;
         }
         
         public IList<Schedule> Schedules { get; set; } = new List<Schedule>();
@@ -85,70 +82,6 @@ namespace TargetProjectManage.Pages.Schedules
             var fileBytes = Encoding.UTF8.GetBytes(csv.ToString());
 
             return File(fileBytes, "text/csv; charset=utf-8", fileName);
-        }
-
-        public async Task<IActionResult> OnGetExportPdfAsync(int? projectId)
-        {
-            if (!projectId.HasValue)
-                return NotFound();
-
-            var project = await _context.Projects.FindAsync(projectId.Value);
-            if (project == null)
-                return NotFound();
-
-            var schedules = await _context.Schedules
-                .Where(s => s.ProjectId == projectId.Value)
-                .OrderBy(s => s.EndDate)
-                .ToListAsync();
-
-            // 建立 HTML 內容
-            var html = new StringBuilder();
-            html.AppendLine("<!DOCTYPE html>");
-            html.AppendLine("<html><head>");
-            html.AppendLine("<meta charset='utf-8'>");
-            html.AppendLine("<style>");
-            html.AppendLine("body { font-family: 'Microsoft JhengHei', Arial, sans-serif; margin: 20px; }");
-            html.AppendLine("h1 { color: #2c3e50; text-align: center; }");
-            html.AppendLine("h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }");
-            html.AppendLine("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
-            html.AppendLine("th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }");
-            html.AppendLine("th { background-color: #f2f2f2; font-weight: bold; }");
-            html.AppendLine("tr:nth-child(even) { background-color: #f9f9f9; }");
-            html.AppendLine(".info { background-color: #e8f4fd; padding: 10px; margin: 10px 0; border-left: 4px solid #3498db; }");
-            html.AppendLine("</style>");
-            html.AppendLine("</head><body>");
-
-            html.AppendLine($"<h1>專案時程管理報表</h1>");
-            html.AppendLine($"<div class='info'>");
-            html.AppendLine($"<strong>專案名稱：</strong>{project.ProjectName}<br>");
-            html.AppendLine($"<strong>專案代碼：</strong>{project.ProjectCode}<br>");
-            html.AppendLine($"<strong>匯出時間：</strong>{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            html.AppendLine($"</div>");
-
-            html.AppendLine("<h2>時程明細</h2>");
-            html.AppendLine("<table>");
-            html.AppendLine("<tr><th>階段名稱</th><th>階段類型</th><th>開始日期</th><th>結束日期</th><th>負責人</th><th>備註</th></tr>");
-
-            foreach (var schedule in schedules)
-            {
-                html.AppendLine($"<tr>");
-                html.AppendLine($"<td>{schedule.StageName}</td>");
-                html.AppendLine($"<td>{schedule.StageType ?? ""}</td>");
-                html.AppendLine($"<td>{schedule.StartDate:yyyy-MM-dd}</td>");
-                html.AppendLine($"<td>{schedule.EndDate:yyyy-MM-dd}</td>");
-                html.AppendLine($"<td>{schedule.Owner ?? ""}</td>");
-                html.AppendLine($"<td>{schedule.Remark ?? ""}</td>");
-                html.AppendLine($"</tr>");
-            }
-
-            html.AppendLine("</table>");
-            html.AppendLine("</body></html>");
-
-            // 使用 PuppeteerSharp 轉換為 PDF
-            var pdfBytes = await _pdfService.GeneratePdfAsync(html.ToString(), $"{project.ProjectName}_時程管理");
-            var fileName = $"{project.ProjectName}_時程管理_{DateTime.Now:yyyyMMdd}.pdf";
-
-            return File(pdfBytes, "application/pdf", fileName);
         }
 
         public async Task<IActionResult> OnGetExportExcelAsync(int? projectId)

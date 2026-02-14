@@ -1,15 +1,11 @@
 using TargetProjectManage.Data;
 using Microsoft.EntityFrameworkCore;
-using TargetProjectManage.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
-
-// 註冊 PuppeteerSharp 服務
-builder.Services.AddSingleton<IPdfService, PdfService>();
 
 // 從環境變數或配置檔案取得連線字串
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 

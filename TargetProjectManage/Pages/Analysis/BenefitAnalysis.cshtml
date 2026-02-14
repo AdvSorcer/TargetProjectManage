@@ -23,9 +23,6 @@
                     <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportExcel">
                         <i class="bi bi-filetype-xlsx me-2"></i>Excel 格式
                     </a></li>
-                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportPdf">
-                        <i class="bi bi-filetype-pdf me-2"></i>PDF 格式
-                    </a></li>
                 </ul>
             </div>
             <a asp-page="CreateBenefitItem" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
