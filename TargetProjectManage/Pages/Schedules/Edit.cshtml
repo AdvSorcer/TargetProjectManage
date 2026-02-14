@@ -1,0 +1,104 @@
+@page "{id:int}"
+@model TargetProjectManage.Pages.Schedules.EditModel
+@{
+    ViewData["Title"] = "編輯時程";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-pencil me-2"></i>編輯時程</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回時程列表
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來編輯時程</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Schedule.Id" />
+            <input type="hidden" asp-for="Schedule.ProjectId" />
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.StageName" class="form-label">階段名稱 *</label>
+                        <input asp-for="Schedule.StageName" class="form-control" />
+                        <span asp-validation-for="Schedule.StageName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.StageType" class="form-label">階段類型</label>
+                        <input asp-for="Schedule.StageType" class="form-control" />
+                        <span asp-validation-for="Schedule.StageType" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.Owner" class="form-label">負責人</label>
+                        <input asp-for="Schedule.Owner" class="form-control" />
+                        <span asp-validation-for="Schedule.Owner" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.StartDate" class="form-label">開始日期 *</label>
+                        <input asp-for="Schedule.StartDate" type="date" class="form-control" />
+                        <span asp-validation-for="Schedule.StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.EndDate" class="form-label">結束日期 *</label>
+                        <input asp-for="Schedule.EndDate" type="date" class="form-control" />
+                        <span asp-validation-for="Schedule.EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Schedule.Remark" class="form-label">備註</label>
+                <textarea asp-for="Schedule.Remark" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Schedule.Remark" class="text-danger"></span>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存變更
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

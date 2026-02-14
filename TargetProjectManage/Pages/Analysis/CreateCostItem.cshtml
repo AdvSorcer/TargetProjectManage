@@ -1,0 +1,171 @@
+@page
+@model TargetProjectManage.Pages.Analysis.CreateCostItemModel
+@{
+    ViewData["Title"] = "新增成本項目";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="bi bi-plus-circle me-2"></i>新增成本項目</h1>
+        @if (Model.CurrentProject != null)
+        {
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        }
+    </div>
+    <a asp-page="CostAnalysis" asp-route-projectId="@Model.CostItem.ProjectId" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>返回成本分析
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-calculator me-2"></i>成本項目資訊</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <input type="hidden" asp-for="CostItem.ProjectId" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.ItemName" class="form-label">項目名稱 *</label>
+                                <input asp-for="CostItem.ItemName" class="form-control" />
+                                <span asp-validation-for="CostItem.ItemName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.Category" class="form-label">成本類別 *</label>
+                                <select asp-for="CostItem.Category" class="form-select">
+                                    <option value="">請選擇類別</option>
+                                    <option value="人力">人力</option>
+                                    <option value="設備">設備</option>
+                                    <option value="材料">材料</option>
+                                    <option value="管理費">管理費</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                                <span asp-validation-for="CostItem.Category" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.EstimatedCost" class="form-label">預估成本 *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="CostItem.EstimatedCost" class="form-control" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="CostItem.EstimatedCost" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.ActualCost" class="form-label">實際成本</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="CostItem.ActualCost" class="form-control" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="CostItem.ActualCost" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CostItem.Description" class="form-label">說明</label>
+                        <textarea asp-for="CostItem.Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CostItem.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.ContractNumber" class="form-label">合約編號</label>
+                                <input asp-for="CostItem.ContractNumber" class="form-control" />
+                                <span asp-validation-for="CostItem.ContractNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.PaymentTerms" class="form-label">付款條件</label>
+                                <input asp-for="CostItem.PaymentTerms" class="form-control" />
+                                <span asp-validation-for="CostItem.PaymentTerms" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.PaymentDate" class="form-label">付款日期</label>
+                                <input asp-for="CostItem.PaymentDate" class="form-control" type="date" />
+                                <span asp-validation-for="CostItem.PaymentDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CostItem.TaxStatus" class="form-label">稅務狀態</label>
+                                <select asp-for="CostItem.TaxStatus" class="form-select">
+                                    <option value="">請選擇狀態</option>
+                                    <option value="含稅">含稅</option>
+                                    <option value="未稅">未稅</option>
+                                    <option value="免稅">免稅</option>
+                                </select>
+                                <span asp-validation-for="CostItem.TaxStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-page="CostAnalysis" asp-route-projectId="@Model.CostItem.ProjectId" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>建立成本項目
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle me-2"></i>填寫說明</h5>
+            </div>
+            <div class="card-body">
+                <h6>成本類別說明：</h6>
+                <ul class="list-unstyled">
+                    <li><span class="badge bg-primary me-2">人力</span>人員薪資、加班費等</li>
+                    <li><span class="badge bg-success me-2">設備</span>硬體設備、軟體授權等</li>
+                    <li><span class="badge bg-info me-2">材料</span>耗材、原料等</li>
+                    <li><span class="badge bg-warning me-2">管理費</span>管理、行政費用</li>
+                    <li><span class="badge bg-secondary me-2">其他</span>其他相關費用</li>
+                </ul>
+                
+                <hr>
+                
+                <h6>填寫建議：</h6>
+                <ul>
+                    <li>預估成本為必填項目</li>
+                    <li>實際成本可在執行過程中更新</li>
+                    <li>合約編號有助於追蹤管理</li>
+                    <li>付款條件影響現金流規劃</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

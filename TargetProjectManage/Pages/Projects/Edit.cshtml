@@ -1,0 +1,101 @@
+@page
+@model TargetProjectManage.Pages.Projects.EditModel
+@{
+    ViewData["Title"] = "編輯專案";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-pencil me-2"></i>編輯專案</h1>
+    <a asp-page="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>返回列表
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Project.Id" />
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Project.ProjectName" class="form-label">專案名稱 *</label>
+                        <input asp-for="Project.ProjectName" class="form-control" />
+                        <span asp-validation-for="Project.ProjectName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Project.ProjectCode" class="form-label">專案代碼 *</label>
+                        <input asp-for="Project.ProjectCode" class="form-control" />
+                        <span asp-validation-for="Project.ProjectCode" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Project.Description" class="form-label">專案描述</label>
+                <textarea asp-for="Project.Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Project.Description" class="text-danger"></span>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Project.Status" class="form-label">狀態</label>
+                        <select asp-for="Project.Status" class="form-select">
+                            <option value="進行中">進行中</option>
+                            <option value="已完成">已完成</option>
+                            <option value="暫停">暫停</option>
+                            <option value="取消">取消</option>
+                        </select>
+                        <span asp-validation-for="Project.Status" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Project.Owner" class="form-label">負責人</label>
+                        <input asp-for="Project.Owner" class="form-control" />
+                        <span asp-validation-for="Project.Owner" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Project.StartDate" class="form-label">開始日期</label>
+                        <input asp-for="Project.StartDate" type="date" class="form-control" />
+                        <span asp-validation-for="Project.StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Project.EndDate" class="form-label">結束日期</label>
+                        <input asp-for="Project.EndDate" type="date" class="form-control" />
+                        <span asp-validation-for="Project.EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Project.Remark" class="form-label">備註</label>
+                        <input asp-for="Project.Remark" class="form-control" />
+                        <span asp-validation-for="Project.Remark" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存變更
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

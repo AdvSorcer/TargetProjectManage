@@ -1,0 +1,178 @@
+@page
+@model TargetProjectManage.Pages.Analysis.EditBenefitItemModel
+@{
+    ViewData["Title"] = "編輯效益項目";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="bi bi-pencil me-2"></i>編輯效益項目</h1>
+        @if (Model.BenefitItem.Project != null)
+        {
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.BenefitItem.Project.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.BenefitItem.Project.ProjectCode</span>
+            </div>
+        }
+    </div>
+    <a asp-page="BenefitAnalysis" asp-route-projectId="@Model.BenefitItem.ProjectId" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>返回效益分析
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-graph-up me-2"></i>效益項目資訊</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <input type="hidden" asp-for="BenefitItem.Id" />
+                    <input type="hidden" asp-for="BenefitItem.ProjectId" />
+                    <input type="hidden" asp-for="BenefitItem.CreatedDate" />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.ItemName" class="form-label">項目名稱 *</label>
+                                <input asp-for="BenefitItem.ItemName" class="form-control" />
+                                <span asp-validation-for="BenefitItem.ItemName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.Category" class="form-label">效益類別 *</label>
+                                <select asp-for="BenefitItem.Category" class="form-select">
+                                    <option value="">請選擇類別</option>
+                                    <option value="直接效益">直接效益</option>
+                                    <option value="間接效益">間接效益</option>
+                                    <option value="社會效益">社會效益</option>
+                                </select>
+                                <span asp-validation-for="BenefitItem.Category" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.EstimatedValue" class="form-label">預期價值 *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="BenefitItem.EstimatedValue" class="form-control" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="BenefitItem.EstimatedValue" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.ActualValue" class="form-label">實際價值</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">NT$</span>
+                                    <input asp-for="BenefitItem.ActualValue" class="form-control" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="BenefitItem.ActualValue" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BenefitItem.Description" class="form-label">說明</label>
+                        <textarea asp-for="BenefitItem.Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="BenefitItem.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.BenefitType" class="form-label">效益類型</label>
+                                <select asp-for="BenefitItem.BenefitType" class="form-select">
+                                    <option value="">請選擇類型</option>
+                                    <option value="量化">量化</option>
+                                    <option value="質化">質化</option>
+                                </select>
+                                <span asp-validation-for="BenefitItem.BenefitType" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BenefitItem.MeasurementMethod" class="form-label">衡量方法</label>
+                                <input asp-for="BenefitItem.MeasurementMethod" class="form-control" />
+                                <span asp-validation-for="BenefitItem.MeasurementMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BenefitItem.ResponsibleUnit" class="form-label">負責單位</label>
+                        <input asp-for="BenefitItem.ResponsibleUnit" class="form-control" />
+                        <span asp-validation-for="BenefitItem.ResponsibleUnit" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-page="BenefitAnalysis" asp-route-projectId="@Model.BenefitItem.ProjectId" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>儲存變更
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle me-2"></i>編輯說明</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-lightbulb me-2"></i>
+                    <strong>編輯提醒：</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>修改預期價值會影響整體效益分析</li>
+                        <li>實際價值應根據實際情況更新</li>
+                        <li>衡量方法有助於效益評估</li>
+                    </ul>
+                </div>
+                
+                <hr>
+                
+                <h6>效益差異分析：</h6>
+                @{
+                    var difference = Model.BenefitItem.ActualValue - Model.BenefitItem.EstimatedValue;
+                    var diffPercentage = Model.BenefitItem.EstimatedValue > 0 ? (difference / Model.BenefitItem.EstimatedValue * 100) : 0;
+                }
+                <div class="mb-2">
+                    <span class="badge bg-@(difference > 0 ? "success" : difference < 0 ? "danger" : "secondary")">
+                        差異: NT$ @difference.ToString("N0") (@diffPercentage.ToString("F1")%)
+                    </span>
+                </div>
+                
+                @if (difference > 0)
+                {
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        實際效益超出預期，表現優異。
+                    </div>
+                }
+                else if (difference < 0)
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        實際效益低於預期，需要檢視原因。
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

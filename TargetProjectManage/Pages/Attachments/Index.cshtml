@@ -1,0 +1,128 @@
+@page
+@model TargetProjectManage.Pages.Attachments.IndexModel
+@{
+    ViewData["Title"] = "合約及附件";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-paperclip me-2"></i>合約及附件</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <form method="get" class="me-3 d-flex align-items-center">
+                <input type="hidden" name="projectId" value="@Model.CurrentProject.Id" />
+                <label for="categoryFilter" class="me-2 mb-0 text-muted small">類別</label>
+                <select id="categoryFilter" name="categoryFilter" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="全部" selected="@(string.IsNullOrEmpty(Model.CategoryFilter) || Model.CategoryFilter == "全部")">全部</option>
+                    <option value="合約" selected="@(Model.CategoryFilter == "合約")">合約</option>
+                    <option value="工作說明" selected="@(Model.CategoryFilter == "工作說明")">工作說明</option>
+                    <option value="需求文件" selected="@(Model.CategoryFilter == "需求文件")">需求文件</option>
+                    <option value="分析文件" selected="@(Model.CategoryFilter == "分析文件")">分析文件</option>
+                    <option value="驗收文件" selected="@(Model.CategoryFilter == "驗收文件")">驗收文件</option>
+                    <option value="圖檔" selected="@(Model.CategoryFilter == "圖檔")">圖檔</option>
+                    <option value="其他" selected="@(Model.CategoryFilter == "其他")">其他</option>
+                </select>
+            </form>
+            <a asp-page="Create" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary me-2">
+                <i class="bi bi-upload me-1"></i>上傳附件
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來管理合約及附件</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+@if (Model.Attachments.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>檔案名稱</th>
+                    <th>類別</th>
+                    <th>說明</th>
+                    <th>大小</th>
+                    <th>上傳時間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Attachments)
+                {
+                    <tr>
+                        <td>
+                            <i class="bi bi-file-earmark me-1 text-muted"></i>
+                            @item.OriginalFileName
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Category))
+                            {
+                                <span class="badge bg-secondary">@item.Category</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td style="max-width: 280px;">@(item.Description ?? "-")</td>
+                        <td>@FormatFileSize(item.FileSizeBytes)</td>
+                        <td>@item.UploadedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="Download" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm" target="_blank" title="下載">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                                <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm" title="刪除">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-folder2-open display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">尚無附件</h3>
+        <p class="text-muted">可上傳合約、工作說明、Word、PDF、Excel、圖檔等，方便日後查閱</p>
+        <a asp-page="Create" asp-route-projectId="@Model.CurrentProject!.Id" class="btn btn-primary">
+            <i class="bi bi-upload me-1"></i>上傳第一個附件
+        </a>
+    </div>
+}
+
+@functions {
+    string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

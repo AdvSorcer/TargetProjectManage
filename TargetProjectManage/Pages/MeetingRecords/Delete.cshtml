@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model TargetProjectManage.Pages.MeetingRecords.DeleteModel
+@{
+    ViewData["Title"] = "刪除會議記錄";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-exclamation-triangle me-2 text-danger"></i>刪除會議記錄</h1>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回會議記錄
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來刪除會議記錄</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">確認刪除</h4>
+    <p>您確定要刪除此會議記錄嗎？此操作無法復原。</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-journal-text me-2"></i>@Model.MeetingRecord.Subject
+                </h5>
+            </div>
+            <div class="card-body">
+                <p><strong>開會時間:</strong> @Model.MeetingRecord.MeetingTime.ToString("yyyy/MM/dd HH:mm")</p>
+                <p><strong>地點:</strong> @Model.MeetingRecord.Location</p>
+                <p><strong>與會人員:</strong></p>
+                <p style="white-space: pre-wrap;">@Model.MeetingRecord.Participants</p>
+                @if (!string.IsNullOrEmpty(Model.MeetingRecord.Content))
+                {
+                    <p><strong>會議內容:</strong></p>
+                    <p style="white-space: pre-wrap;">@Model.MeetingRecord.Content</p>
+                }
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            <input type="hidden" asp-for="MeetingRecord.Id" />
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>確認刪除
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

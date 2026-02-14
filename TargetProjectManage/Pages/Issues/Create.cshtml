@@ -1,0 +1,88 @@
+@page
+@model TargetProjectManage.Pages.Issues.CreateModel
+@{
+    ViewData["Title"] = "新增議題";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-plus-circle me-2"></i>新增議題</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回議題清單
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來新增議題</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Issue.ProjectId" />
+
+            <div class="mb-3">
+                <label asp-for="Issue.Title" class="form-label">議題 *</label>
+                <input asp-for="Issue.Title" class="form-control" />
+                <span asp-validation-for="Issue.Title" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Issue.Owner" class="form-label">Issue Owner</label>
+                        <input asp-for="Issue.Owner" class="form-control" />
+                        <span asp-validation-for="Issue.Owner" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Issue.Status" class="form-label">狀態 *</label>
+                        <select asp-for="Issue.Status" class="form-select">
+                            <option value="未開始">未開始</option>
+                            <option value="進行中">進行中</option>
+                            <option value="等待">等待</option>
+                            <option value="結束">結束</option>
+                        </select>
+                        <span asp-validation-for="Issue.Status" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Issue.Discussion" class="form-label">討論內容</label>
+                <textarea asp-for="Issue.Discussion" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Issue.Discussion" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存議題
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

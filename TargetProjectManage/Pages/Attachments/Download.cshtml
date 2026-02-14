@@ -1,0 +1,7 @@
+@page
+@model TargetProjectManage.Pages.Attachments.DownloadModel
+@{
+    ViewData["Title"] = "下載附件";
+    // 此頁由 OnGetAsync 直接回傳檔案，一般不會渲染此內容；若未帶 id 會導向專案列表
+}
+<p class="text-muted">若未自動下載，請<a asp-page="/Projects/Index">返回專案列表</a>後從「合約及附件」重新下載。</p>

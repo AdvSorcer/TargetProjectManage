@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  targetprojectmanage:
+    build:
+      context: .
+      dockerfile: TargetProjectManage/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    container_name: targetprojectmanage-app

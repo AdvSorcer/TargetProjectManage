@@ -1,0 +1,303 @@
+@page
+@model TargetProjectManage.Pages.Analysis.BenefitAnalysisModel
+@{
+    ViewData["Title"] = "效益分析";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-graph-up me-2"></i>效益分析</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div>
+            <div class="btn-group me-2" role="group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>匯出報表
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportExcel">
+                        <i class="bi bi-filetype-xlsx me-2"></i>Excel 格式
+                    </a></li>
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportPdf">
+                        <i class="bi bi-filetype-pdf me-2"></i>PDF 格式
+                    </a></li>
+                </ul>
+            </div>
+            <a asp-page="CreateBenefitItem" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>新增效益項目
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+
+    <!-- 效益統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">預期總效益</h4>
+                            <h2>NT$ @Model.TotalEstimatedValue.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-graph-up display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">實際總效益</h4>
+                            <h2>NT$ @Model.TotalActualValue.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">效益差異</h4>
+                            <h2>NT$ @((Model.TotalActualValue - Model.TotalEstimatedValue).ToString("N0"))</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-graph-up-arrow display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">效益達成率</h4>
+                            <h2>@((Model.TotalEstimatedValue > 0 ? (Model.TotalActualValue / Model.TotalEstimatedValue * 100) : 0).ToString("F1"))%</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-percent display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 效益結構圖表 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-pie-chart me-2"></i>效益結構分析</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="benefitPieChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart me-2"></i>預期 vs 實際效益</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="benefitBarChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 效益項目列表 -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-list me-2"></i>效益項目明細</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.BenefitItems.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>項目名稱</th>
+                                <th>類別</th>
+                                <th>預期價值</th>
+                                <th>實際價值</th>
+                                <th>差異</th>
+                                <th>效益類型</th>
+                                <th>負責單位</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.BenefitItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.ItemName</strong>
+                                        @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            <br><small class="text-muted">@item.Description</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@item.Category</span>
+                                    </td>
+                                    <td>NT$ @item.EstimatedValue.ToString("N0")</td>
+                                    <td>NT$ @item.ActualValue.ToString("N0")</td>
+                                    <td>
+                                        @{
+                                            var difference = item.ActualValue - item.EstimatedValue;
+                                            var diffClass = difference > 0 ? "text-success" : difference < 0 ? "text-danger" : "text-muted";
+                                        }
+                                        <span class="@diffClass">NT$ @difference.ToString("N0")</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.BenefitType))
+                                        {
+                                            <span class="badge bg-@(item.BenefitType == "量化" ? "primary" : "info")">@item.BenefitType</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>@(item.ResponsibleUnit ?? "-")</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="EditBenefitItem" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="DeleteBenefitItem" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-graph-up display-1 text-muted"></i>
+                    <h3 class="text-muted mt-3">尚無效益項目</h3>
+                    <p class="text-muted">點擊上方按鈕新增第一個效益項目</p>
+                    <a asp-page="CreateBenefitItem" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>新增效益項目
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來進行效益分析</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // 等待 Chart.js 載入完成後再初始化圖表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查 Chart.js 是否已載入
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js 未正確載入');
+                return;
+            }
+
+            // 效益結構圓餅圖
+            const benefitPieData = {
+                labels: [@Html.Raw(string.Join(",", Model.BenefitByCategory.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    data: [@string.Join(",", Model.BenefitByCategory.Values)],
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            };
+
+            const benefitPieChart = new Chart(document.getElementById('benefitPieChart'), {
+                type: 'pie',
+                data: benefitPieData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 預期 vs 實際效益柱狀圖
+            const benefitBarData = {
+                labels: ['預期效益', '實際效益'],
+                datasets: [{
+                    label: '效益 (NT$)',
+                    data: [@Model.TotalEstimatedValue, @Model.TotalActualValue],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const benefitBarChart = new Chart(document.getElementById('benefitBarChart'), {
+                type: 'bar',
+                data: benefitBarData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'NT$ ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

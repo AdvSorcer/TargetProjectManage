@@ -1,0 +1,76 @@
+@page
+@model TargetProjectManage.Pages.Attachments.CreateModel
+@{
+    ViewData["Title"] = "上傳附件";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-upload me-2"></i>上傳附件</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回附件清單
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <a asp-page="/Projects/Index" class="btn btn-primary">選擇專案</a>
+    </div>
+    return;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Attachment.ProjectId" />
+
+            <div class="mb-3">
+                <label class="form-label">選擇檔案 *</label>
+                <input type="file" asp-for="UploadedFile" class="form-control" />
+                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                <div class="form-text">支援 Word、PDF、Excel、圖檔等常見格式，單檔建議不超過 50 MB</div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Attachment.Category" class="form-label">類別</label>
+                <select asp-for="Attachment.Category" class="form-select">
+                    <option value="">請選擇...</option>
+                    <option value="合約">合約</option>
+                    <option value="工作說明">工作說明</option>
+                    <option value="需求文件">需求文件</option>
+                    <option value="分析文件">分析文件</option>
+                    <option value="驗收文件">驗收文件</option>
+                    <option value="圖檔">圖檔</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Attachment.Description" class="form-label">說明</label>
+                <input asp-for="Attachment.Description" class="form-control" placeholder="例如：正式合約書、需求規格 v1.0" />
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject!.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload me-1"></i>上傳
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,116 @@
+@page
+@model TargetProjectManage.Pages.Issues.IndexModel
+@{
+    ViewData["Title"] = "議題清單";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-list-task me-2"></i>議題清單</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <form method="get" class="me-3 d-flex align-items-center">
+                <input type="hidden" name="projectId" value="@Model.CurrentProject.Id" />
+                <label for="statusFilter" class="me-2 mb-0 text-muted small">狀態篩選</label>
+                <select id="statusFilter" name="statusFilter" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="全部" selected="@(string.IsNullOrEmpty(Model.StatusFilter) || Model.StatusFilter == "全部")">全部</option>
+                    <option value="未開始" selected="@(Model.StatusFilter == "未開始")">未開始</option>
+                    <option value="進行中" selected="@(Model.StatusFilter == "進行中")">進行中</option>
+                    <option value="等待" selected="@(Model.StatusFilter == "等待")">等待</option>
+                    <option value="結束" selected="@(Model.StatusFilter == "結束")">結束</option>
+                </select>
+            </form>
+            <a asp-page="Create" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle me-1"></i>新增議題
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來管理議題</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+@if (Model.Issues.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>議題</th>
+                    <th>Issue Owner</th>
+                    <th>討論內容</th>
+                    <th>狀態</th>
+                    <th>建立時間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Issues)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Owner</td>
+                        <td style="max-width: 400px; white-space: pre-wrap;">@item.Discussion</td>
+                        <td>
+                            @{
+                                var badgeClass = item.Status switch
+                                {
+                                    "進行中" => "bg-primary",
+                                    "等待" => "bg-warning text-dark",
+                                    "結束" => "bg-success",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @badgeClass">@item.Status</span>
+                        </td>
+                        <td>@item.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="/IssueAttachments/Index" asp-route-issueId="@item.Id" class="btn btn-outline-secondary btn-sm" title="附件">
+                                    <i class="bi bi-paperclip"></i>
+                                </a>
+                                <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-chat-square-text display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">尚無議題</h3>
+        <p class="text-muted">點選右上角「新增議題」來建立第一個議題</p>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

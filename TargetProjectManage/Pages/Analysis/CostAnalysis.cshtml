@@ -1,0 +1,294 @@
+@page
+@model TargetProjectManage.Pages.Analysis.CostAnalysisModel
+@{
+    ViewData["Title"] = "成本分析";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-calculator me-2"></i>成本分析</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div>
+            <div class="btn-group me-2" role="group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>匯出報表
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportExcel">
+                        <i class="bi bi-filetype-xlsx me-2"></i>Excel 格式
+                    </a></li>
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportPdf">
+                        <i class="bi bi-filetype-pdf me-2"></i>PDF 格式
+                    </a></li>
+                </ul>
+            </div>
+            <a asp-page="CreateCostItem" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>新增成本項目
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+
+    <!-- 成本統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">預估總成本</h4>
+                            <h2>NT$ @Model.TotalEstimatedCost.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calculator display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">實際總成本</h4>
+                            <h2>NT$ @Model.TotalActualCost.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-currency-dollar display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">成本差異</h4>
+                            <h2>NT$ @((Model.TotalActualCost - Model.TotalEstimatedCost).ToString("N0"))</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-graph-up display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">成本控制率</h4>
+                            <h2>@((Model.TotalEstimatedCost > 0 ? (Model.TotalActualCost / Model.TotalEstimatedCost * 100) : 0).ToString("F1"))%</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-percent display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成本結構圖表 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-pie-chart me-2"></i>成本結構分析</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="costPieChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-bar-chart me-2"></i>預估 vs 實際成本</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="costBarChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成本項目列表 -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-list me-2"></i>成本項目明細</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.CostItems.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>項目名稱</th>
+                                <th>類別</th>
+                                <th>預估成本</th>
+                                <th>實際成本</th>
+                                <th>差異</th>
+                                <th>合約編號</th>
+                                <th>付款日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CostItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.ItemName</strong>
+                                        @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            <br><small class="text-muted">@item.Description</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@item.Category</span>
+                                    </td>
+                                    <td>NT$ @item.EstimatedCost.ToString("N0")</td>
+                                    <td>NT$ @item.ActualCost.ToString("N0")</td>
+                                    <td>
+                                        @{
+                                            var difference = item.ActualCost - item.EstimatedCost;
+                                            var diffClass = difference > 0 ? "text-danger" : difference < 0 ? "text-success" : "text-muted";
+                                        }
+                                        <span class="@diffClass">NT$ @difference.ToString("N0")</span>
+                                    </td>
+                                    <td>@(item.ContractNumber ?? "-")</td>
+                                    <td>@(item.PaymentDate?.ToString("yyyy/MM/dd") ?? "-")</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="EditCostItem" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="DeleteCostItem" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calculator display-1 text-muted"></i>
+                    <h3 class="text-muted mt-3">尚無成本項目</h3>
+                    <p class="text-muted">點擊上方按鈕新增第一個成本項目</p>
+                    <a asp-page="CreateCostItem" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>新增成本項目
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來進行成本分析</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // 等待 Chart.js 載入完成後再初始化圖表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查 Chart.js 是否已載入
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js 未正確載入');
+                return;
+            }
+
+            // 成本結構圓餅圖
+            const costPieData = {
+                labels: [@Html.Raw(string.Join(",", Model.CostByCategory.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    data: [@string.Join(",", Model.CostByCategory.Values)],
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            };
+
+            const costPieChart = new Chart(document.getElementById('costPieChart'), {
+                type: 'pie',
+                data: costPieData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 預估 vs 實際成本柱狀圖
+            const costBarData = {
+                labels: ['預估成本', '實際成本'],
+                datasets: [{
+                    label: '成本 (NT$)',
+                    data: [@Model.TotalEstimatedCost, @Model.TotalActualCost],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const costBarChart = new Chart(document.getElementById('costBarChart'), {
+                type: 'bar',
+                data: costBarData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'NT$ ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

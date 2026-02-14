@@ -1,0 +1,90 @@
+@page
+@model TargetProjectManage.Pages.MeetingRecords.IndexModel
+@{
+    ViewData["Title"] = "會議記錄";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-journal-text me-2"></i>會議記錄</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <a asp-page="Create" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle me-1"></i>新增會議記錄
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來管理會議記錄</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+@if (Model.MeetingRecords.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>開會時間</th>
+                    <th>地點</th>
+                    <th>與會人員</th>
+                    <th>主題</th>
+                    <th>會議內容</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.MeetingRecords)
+                {
+                    <tr>
+                        <td>@item.MeetingTime.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>@item.Location</td>
+                        <td style="max-width: 180px; white-space: pre-wrap;">@item.Participants</td>
+                        <td>@item.Subject</td>
+                        <td style="max-width: 300px; white-space: pre-wrap;">@(item.Content != null && item.Content.Length > 80 ? item.Content.Substring(0, 80) + "…" : item.Content)</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-journal-text display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">尚無會議記錄</h3>
+        <p class="text-muted">點選右上角「新增會議記錄」來建立第一筆記錄</p>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

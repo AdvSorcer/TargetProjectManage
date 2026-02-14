@@ -1,0 +1,74 @@
+@page "{id:int}"
+@model TargetProjectManage.Pages.Proposals.DeleteModel
+@{
+    ViewData["Title"] = "刪除提案";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-exclamation-triangle me-2 text-danger"></i>刪除提案</h1>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回提案列表
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來刪除提案</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">確認刪除</h4>
+    <p>您確定要刪除此提案嗎？此操作無法復原。</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>@Model.Proposal.VendorName
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>廠商名稱:</strong> @Model.Proposal.VendorName</p>
+                        <p><strong>預算:</strong> 
+                            <span class="badge bg-success">NT$ @Model.Proposal.Budget.ToString("N0")</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>執行期間:</strong> 
+                            <span class="badge bg-info">@Model.Proposal.DurationMonths 個月</span>
+                        </p>
+                        <p><strong>提案日期:</strong> @Model.Proposal.SubmitDate.ToString("yyyy/MM/dd")</p>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Proposal.Comment))
+                {
+                    <p><strong>備註:</strong> @Model.Proposal.Comment</p>
+                }
+            </div>
+        </div>
+        
+        <form method="post" class="mt-4">
+            <input type="hidden" asp-for="Proposal.Id" />
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>確認刪除
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

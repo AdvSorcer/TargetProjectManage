@@ -1,0 +1,84 @@
+@page
+@model TargetProjectManage.Pages.Schedules.IndexModel
+@{
+    ViewData["Title"] = "專案時程管理";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-calendar-check me-2"></i>專案時程管理</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <div>
+            <div class="btn-group me-2" role="group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-1"></i>匯出報表
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportCsv">
+                        <i class="bi bi-filetype-csv me-2"></i>CSV 格式
+                    </a></li>
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportExcel">
+                        <i class="bi bi-filetype-xlsx me-2"></i>Excel 格式
+                    </a></li>
+                    <li><a class="dropdown-item" href="?projectId=@Model.CurrentProject.Id&handler=ExportPdf">
+                        <i class="bi bi-filetype-pdf me-2"></i>PDF 格式
+                    </a></li>
+                </ul>
+            </div>
+            <a asp-page="Create" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>新增時程
+            </a>
+            <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回專案列表
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來管理時程</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>階段名稱</th>
+            <th>階段類型</th>
+            <th>開始日期</th>
+            <th>結束日期</th>
+            <th>負責人</th>
+            <th>備註</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Schedules)
+    {
+        <tr>
+            <td>@item.StageName</td>
+            <td>@item.StageType</td>
+            <td>@item.StartDate.ToShortDateString()</td>
+            <td>@item.EndDate.ToShortDateString()</td>
+            <td>@item.Owner</td>
+            <td>@item.Remark</td>
+            <td>
+                <a asp-page="Edit" asp-route-id="@item.Id">編輯</a> |
+                <a asp-page="Delete" asp-route-id="@item.Id">刪除</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,167 @@
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* 側邊欄樣式 */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+  background-color: #343a40;
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.5) !important;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 側邊選單不顯示選取效果，與其他項目一致 */
+.sidebar .nav-link.active {
+  color: rgba(255, 255, 255, 0.5) !important;
+  background-color: transparent;
+}
+
+/* 進階功能收合箭頭：展開時旋轉 */
+.sidebar .sidebar-chevron {
+  transition: transform 0.2s ease;
+}
+.sidebar [aria-expanded="true"] .sidebar-chevron {
+  transform: rotate(180deg);
+}
+
+/* 主要內容區域 */
+.main-content {
+  margin-left: 250px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* 小螢幕側邊欄開關按鈕（固定於左上，不佔內容空間） */
+.sidebar-toggle-mobile {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1001;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+/* 主要內容在小螢幕時為開關按鈕留一點頂部間距，避免內容被擋住 */
+@media (max-width: 991.98px) {
+  .main-content main.p-4 {
+    padding-top: 3.5rem !important;
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* 頁腳調整 */
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 0;
+  margin-top: auto;
+}
+
+/* 表單樣式調整 */
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* 內容區域樣式 */
+main {
+  background-color: #fff;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin: 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+/* 側邊欄中的表單選擇器樣式 */
+.sidebar .form-select {
+  background-color: #495057;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.sidebar .form-select:focus {
+  background-color: #495057;
+  border-color: #0d6efd;
+  color: #fff;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.sidebar .form-select option {
+  background-color: #495057;
+  color: #fff;
+}
+
+/* 選擇專案區塊：約 2 倍大、更明顯 */
+.project-selector-box {
+  border-radius: 0.5rem;
+  padding: 1rem 1rem !important;
+}
+
+.project-selector-label {
+  font-size: 1.125rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.sidebar .project-selector-input {
+  font-size: 1.125rem !important;
+  padding: 0.625rem 0.875rem !important;
+  min-height: 2.75rem !important;
+  border-width: 2px !important;
+}

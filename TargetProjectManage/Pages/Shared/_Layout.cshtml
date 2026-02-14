@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TargetProjectManage.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="d-flex">
+        <!-- 側邊欄 -->
+        <nav class="sidebar bg-dark text-white" id="sidebar">
+            <div class="sidebar-header p-3 border-bottom">
+                <h4 class="mb-0">
+                    <a class="text-white text-decoration-none d-flex align-items-center" asp-area="" asp-page="/Index">
+                        <i class="bi bi-clipboard-data me-2"></i>
+                        專案管理系統
+                    </a>
+                </h4>
+            </div>
+            <ul class="nav flex-column p-3">
+                <li class="nav-item">
+                    <a class="nav-link text-white d-flex align-items-center" asp-area="" asp-page="/Projects/Index">
+                        <i class="bi bi-folder2-open me-2"></i>
+                        專案管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <div class="project-selector-box px-3 py-3">
+                        <label for="projectSelector" class="form-label mb-2 text-white fw-bold project-selector-label">
+                            <i class="bi bi-folder2-open me-1"></i>選擇專案
+                        </label>
+                        <select id="projectSelector" class="form-select project-selector-input">
+                            <option value="">請選擇專案...</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="schedulesLink" onclick="navigateWithProject('/Schedules/Index')">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        時程管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="timelineLink" onclick="navigateWithProject('/Schedules/Timeline')">
+                        <i class="bi bi-graph-up me-2"></i>
+                        時間軸
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="issuesLink" onclick="navigateWithProject('/Issues/Index')">
+                        <i class="bi bi-list-task me-2"></i>
+                        議題清單
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="attachmentsLink" onclick="navigateWithProject('/Attachments/Index')">
+                        <i class="bi bi-paperclip me-2"></i>
+                        合約及附件
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="meetingRecordsLink" onclick="navigateWithProject('/MeetingRecords/Index')">
+                        <i class="bi bi-journal-text me-2"></i>
+                        會議記錄
+                    </a>
+                </li>
+                <!-- 進階功能（收合區塊） -->
+                <li class="nav-item">
+                    <a class="nav-link text-white d-flex align-items-center" href="#" id="advancedFeaturesToggle" data-bs-toggle="collapse" data-bs-target="#advancedFeaturesCollapse" aria-expanded="false" aria-controls="advancedFeaturesCollapse">
+                        <i class="bi bi-gear-wide-connected me-2"></i>
+                        進階功能
+                        <i class="bi bi-chevron-down ms-auto sidebar-chevron"></i>
+                    </a>
+                    <div class="collapse" id="advancedFeaturesCollapse">
+                        <ul class="nav flex-column ms-3 mt-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-white-50 d-flex align-items-center py-1" href="#" id="proposalsLink" onclick="navigateWithProject('/Proposals/Index')">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    廠商提案管理
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white-50 d-flex align-items-center py-1" href="#" id="costAnalysisLink" onclick="navigateWithProject('/Analysis/CostAnalysis')">
+                                    <i class="bi bi-calculator me-2"></i>
+                                    成本分析
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white-50 d-flex align-items-center py-1" href="#" id="benefitAnalysisLink" onclick="navigateWithProject('/Analysis/BenefitAnalysis')">
+                                    <i class="bi bi-graph-up me-2"></i>
+                                    效益分析
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 主要內容區域 -->
+        <div class="main-content flex-grow-1">
+            <!-- 僅小螢幕顯示：側邊欄開關 -->
+            <button class="btn btn-outline-secondary d-lg-none sidebar-toggle-mobile" type="button" id="sidebarToggle" aria-label="開啟選單">
+                <i class="bi bi-menu-button-wide"></i>
+            </button>
+
+            <!-- 頁面內容 -->
+            <main class="p-4">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - 專案管理系統 - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer> -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // 專案選擇器功能
+        $(document).ready(function() {
+            // 載入專案列表
+            loadProjects();
+            
+            // 監聽專案選擇變化
+            $('#projectSelector').change(function() {
+                var selectedProjectId = $(this).val();
+                var selectedProjectName = $(this).find('option:selected').text();
+                
+                if (selectedProjectId) {
+                    // 儲存選中的專案到 sessionStorage
+                    sessionStorage.setItem('selectedProjectId', selectedProjectId);
+                    sessionStorage.setItem('selectedProjectName', selectedProjectName);
+                    
+                    // 更新導航連結狀態
+                    updateNavigationLinks(true);
+                    
+                    // 顯示成功訊息
+                    showProjectSelectionMessage(selectedProjectName);
+                    
+                    // 檢查當前頁面是否需要刷新
+                    refreshCurrentPageIfNeeded(selectedProjectId);
+                } else {
+                    // 清除選擇
+                    sessionStorage.removeItem('selectedProjectId');
+                    sessionStorage.removeItem('selectedProjectName');
+                    updateNavigationLinks(false);
+                    
+                    // 如果當前頁面需要專案ID，重定向到專案列表
+                    redirectToProjectListIfNeeded();
+                }
+            });
+            
+            // 檢查是否有已選擇的專案
+            var savedProjectId = sessionStorage.getItem('selectedProjectId');
+            if (savedProjectId) {
+                $('#projectSelector').val(savedProjectId);
+                updateNavigationLinks(true);
+            }
+            
+            // 若當前頁面為進階功能子頁面，自動展開「進階功能」區塊
+            var path = window.location.pathname || '';
+            if (path.indexOf('/Proposals/') !== -1 || path.indexOf('/Analysis/CostAnalysis') !== -1 || path.indexOf('/Analysis/BenefitAnalysis') !== -1) {
+                var collapseEl = document.getElementById('advancedFeaturesCollapse');
+                if (collapseEl && !collapseEl.classList.contains('show')) {
+                    var bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                    bsCollapse.show();
+                    document.getElementById('advancedFeaturesToggle').setAttribute('aria-expanded', 'true');
+                }
+            }
+        });
+        
+        // 載入專案列表
+        function loadProjects() {
+            console.log('開始載入專案列表...');
+            $.get('/api/projects')
+                .done(function(data) {
+                    console.log('API 回應:', data);
+                    var selector = $('#projectSelector');
+                    selector.empty();
+                    selector.append('<option value="">請選擇專案...</option>');
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(function(project) {
+                            selector.append('<option value="' + project.id + '">' + project.projectName + ' (' + project.projectCode + ')</option>');
+                        });
+                        console.log('已載入 ' + data.length + ' 個專案');
+                    } else {
+                        console.log('沒有找到專案數據');
+                        selector.append('<option value="" disabled>暫無專案</option>');
+                    }
+                    
+                    // 如果有保存的選擇，恢復它
+                    var savedProjectId = sessionStorage.getItem('selectedProjectId');
+                    if (savedProjectId) {
+                        selector.val(savedProjectId);
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('載入專案列表失敗:', status, error);
+                    console.error('回應內容:', xhr.responseText);
+                    
+                    var selector = $('#projectSelector');
+                    selector.empty();
+                    selector.append('<option value="">載入失敗，請重新整理頁面</option>');
+                });
+        }
+        
+        // 更新導航連結狀態
+        function updateNavigationLinks(hasProject) {
+            var links = ['#schedulesLink', '#timelineLink', '#issuesLink', '#attachmentsLink', '#meetingRecordsLink', '#proposalsLink', '#costAnalysisLink', '#benefitAnalysisLink'];
+            var selectedProjectId = sessionStorage.getItem('selectedProjectId');
+            
+            links.forEach(function(linkId) {
+                var link = $(linkId);
+                if (hasProject && selectedProjectId) {
+                    link.removeClass('text-white-50').addClass('text-white');
+                    link.css('cursor', 'pointer');
+                } else {
+                    link.removeClass('text-white').addClass('text-white-50');
+                    link.css('cursor', 'not-allowed');
+                }
+            });
+        }
+        
+        // 導航到指定頁面並帶上專案ID
+        function navigateWithProject(page) {
+            var selectedProjectId = sessionStorage.getItem('selectedProjectId');
+            if (selectedProjectId) {
+                window.location.href = page + '?projectId=' + selectedProjectId;
+            } else {
+                alert('請先選擇專案！');
+            }
+        }
+        
+        // 顯示專案選擇訊息
+        function showProjectSelectionMessage(projectName) {
+            // 創建一個臨時的提示訊息
+            var alertDiv = $('<div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 1050;">' +
+                '<i class="bi bi-check-circle me-2"></i>已選擇專案：' + projectName +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                '</div>');
+            
+            $('body').append(alertDiv);
+            
+            // 3秒後自動移除
+            setTimeout(function() {
+                alertDiv.alert('close');
+            }, 3000);
+        }
+        
+        // 檢查當前頁面是否需要刷新
+        function refreshCurrentPageIfNeeded(projectId) {
+            var currentPath = window.location.pathname;
+            
+            // 直接刷新當前頁面並加上專案ID參數
+            // 延遲一點時間讓用戶看到選擇成功的訊息
+            setTimeout(function() {
+                window.location.href = currentPath + '?projectId=' + projectId;
+            }, 1000);
+        }
+        
+        // 如果當前頁面需要專案ID但沒有選擇，重定向到專案列表
+        function redirectToProjectListIfNeeded() {
+            // 直接重定向到專案列表頁面
+            window.location.href = '/Projects/Index';
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

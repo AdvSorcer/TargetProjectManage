@@ -1,0 +1,76 @@
+@page "{id:int}"
+@model TargetProjectManage.Pages.Issues.DeleteModel
+@{
+    ViewData["Title"] = "刪除議題";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-exclamation-triangle me-2 text-danger"></i>刪除議題</h1>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回議題清單
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來刪除議題</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">確認刪除</h4>
+    <p>您確定要刪除此議題嗎？此操作無法復原。</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-task me-2"></i>@Model.Issue.Title
+                </h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Issue Owner:</strong> @Model.Issue.Owner</p>
+                <p><strong>狀態:</strong>
+                    @{
+                        var badgeClass = Model.Issue.Status switch
+                        {
+                            "進行中" => "bg-primary",
+                            "等待" => "bg-warning text-dark",
+                            "結束" => "bg-success",
+                            _ => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @badgeClass">@Model.Issue.Status</span>
+                </p>
+                @if (!string.IsNullOrEmpty(Model.Issue.Discussion))
+                {
+                    <p><strong>討論內容:</strong></p>
+                    <p style="white-space: pre-wrap;">@Model.Issue.Discussion</p>
+                }
+                <p class="text-muted"><strong>建立時間:</strong> @Model.Issue.CreatedAt.ToString("yyyy/MM/dd HH:mm")</p>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            <input type="hidden" asp-for="Issue.Id" />
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>確認刪除
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+

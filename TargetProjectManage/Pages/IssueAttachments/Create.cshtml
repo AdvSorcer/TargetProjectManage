@@ -1,0 +1,61 @@
+@page
+@model TargetProjectManage.Pages.IssueAttachments.CreateModel
+@{
+    ViewData["Title"] = "上傳議題附件";
+}
+
+@if (Model.CurrentIssue != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-upload me-2"></i>上傳議題附件</h1>
+            <div class="text-muted">
+                <i class="bi bi-chat-square-text me-1"></i>@Model.CurrentIssue.Title
+            </div>
+        </div>
+        <a asp-page="Index" asp-route-issueId="@Model.CurrentIssue.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回附件清單
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">找不到該議題</h3>
+        <a asp-page="/Projects/Index" class="btn btn-primary">返回專案列表</a>
+    </div>
+    return;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Attachment.IssueId" />
+
+            <div class="mb-3">
+                <label class="form-label">選擇檔案 *</label>
+                <input type="file" asp-for="UploadedFile" class="form-control" />
+                <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                <div class="form-text">單檔建議不超過 50 MB</div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Attachment.Description" class="form-label">說明</label>
+                <input asp-for="Attachment.Description" class="form-control" placeholder="選填：附件說明" />
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-issueId="@Model.CurrentIssue!.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload me-1"></i>上傳
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

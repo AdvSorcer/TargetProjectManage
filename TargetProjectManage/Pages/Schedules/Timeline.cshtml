@@ -1,0 +1,79 @@
+@page
+@model TargetProjectManage.Pages.Schedules.TimelineModel
+@{
+    ViewData["Title"] = "時程時間軸";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-graph-up me-2"></i>時程時間軸</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName 
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回專案列表
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來查看時間軸</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+<div class="timeline">
+    @foreach (var item in Model.TimelineItems)
+    {
+        <div class="timeline-item">
+            <div class="timeline-date">@item.Date.ToString("yyyy-MM-dd")</div>
+            <div class="timeline-content">
+                <strong>@item.Title</strong>
+                @item.Description
+            </div>
+        </div>
+    }
+</div>
+<style>
+.timeline {
+    position: relative;
+    margin: 1em 0;
+    padding-left: 30px;
+    border-left: 2px solid #0078d4;
+}
+.timeline-item {
+    position: relative;
+}
+.timeline-date {
+    font-weight: bold;
+    color: #0078d4;
+    margin-bottom: 0.3em;
+    font-size: 0.9em;
+}
+.timeline-content {
+    background: #f4f4f4;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    font-size: 0.9em;
+}
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 2px solid #0078d4;
+    border-radius: 50%;
+}
+</style>

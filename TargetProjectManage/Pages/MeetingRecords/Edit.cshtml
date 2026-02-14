@@ -1,0 +1,84 @@
+@page "{id:int}"
+@model TargetProjectManage.Pages.MeetingRecords.EditModel
+@{
+    ViewData["Title"] = "編輯會議記錄";
+}
+
+@if (Model.CurrentProject != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-pencil me-2"></i>編輯會議記錄</h1>
+            <div class="text-muted">
+                <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+                <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            </div>
+        </div>
+        <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>返回會議記錄
+        </a>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從專案列表中選擇一個專案來編輯會議記錄</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>選擇專案
+        </a>
+    </div>
+    return;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="MeetingRecord.Id" />
+            <input type="hidden" asp-for="MeetingRecord.ProjectId" />
+
+            <div class="mb-3">
+                <label asp-for="MeetingRecord.MeetingTime" class="form-label">開會時間 *</label>
+                <input asp-for="MeetingRecord.MeetingTime" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                <span asp-validation-for="MeetingRecord.MeetingTime" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MeetingRecord.Location" class="form-label">地點</label>
+                <input asp-for="MeetingRecord.Location" class="form-control" placeholder="例：會議室A" />
+                <span asp-validation-for="MeetingRecord.Location" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MeetingRecord.Participants" class="form-label">與會人員</label>
+                <textarea asp-for="MeetingRecord.Participants" class="form-control" rows="2" placeholder="多人可換行或以逗號分隔"></textarea>
+                <span asp-validation-for="MeetingRecord.Participants" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MeetingRecord.Subject" class="form-label">主題 *</label>
+                <input asp-for="MeetingRecord.Subject" class="form-control" placeholder="會議主題" />
+                <span asp-validation-for="MeetingRecord.Subject" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MeetingRecord.Content" class="form-label">會議內容</label>
+                <textarea asp-for="MeetingRecord.Content" class="form-control" rows="6" placeholder="紀錄討論重點、決議、待辦事項等"></textarea>
+                <span asp-validation-for="MeetingRecord.Content" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>儲存變更
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

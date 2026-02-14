@@ -1,0 +1,103 @@
+@page
+@model TargetProjectManage.Pages.IssueAttachments.IndexModel
+@{
+    ViewData["Title"] = "議題附件";
+}
+
+@if (Model.CurrentIssue != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-paperclip me-2"></i>議題附件</h1>
+            <div class="text-muted">
+                <i class="bi bi-chat-square-text me-1"></i>@Model.CurrentIssue.Title
+                @if (Model.CurrentIssue.Project != null)
+                {
+                    <span class="badge bg-primary ms-2">@Model.CurrentIssue.Project.ProjectCode</span>
+                }
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-page="Create" asp-route-issueId="@Model.CurrentIssue.Id" class="btn btn-primary">
+                <i class="bi bi-upload me-1"></i>上傳附件
+            </a>
+            <a asp-page="/Issues/Index" asp-route-projectId="@Model.CurrentIssue.ProjectId" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>返回議題清單
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">找不到該議題</h3>
+        <a asp-page="/Projects/Index" class="btn btn-primary">返回專案列表</a>
+    </div>
+    return;
+}
+
+@if (Model.Attachments.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>檔案名稱</th>
+                    <th>說明</th>
+                    <th>大小</th>
+                    <th>上傳時間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Attachments)
+                {
+                    <tr>
+                        <td>
+                            <i class="bi bi-file-earmark me-1 text-muted"></i>
+                            @item.OriginalFileName
+                        </td>
+                        <td style="max-width: 280px;">@(item.Description ?? "-")</td>
+                        <td>@FormatFileSize(item.FileSizeBytes)</td>
+                        <td>@item.UploadedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="Download" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm" target="_blank" title="下載">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                                <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm" title="刪除">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-folder2-open display-1 text-muted"></i>
+        <h3 class="text-muted mt-3">此議題尚無附件</h3>
+        <p class="text-muted">可上傳與此議題相關的檔案，方便追蹤與查閱</p>
+        <a asp-page="Create" asp-route-issueId="@Model.CurrentIssue!.Id" class="btn btn-primary">
+            <i class="bi bi-upload me-1"></i>上傳第一個附件
+        </a>
+    </div>
+}
+
+@functions {
+    string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

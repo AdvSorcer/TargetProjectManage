@@ -1,0 +1,12 @@
+---
+description: C# 語法檢查規則
+globs:  ["*.cs", "*.csproj"]  # 作用於 C# 原始碼與專案檔
+alwaysApply: true
+---
+# 規則正
+## C# 規則
+- 使用 C# 10+ 語法
+- 程式碼需通過 `dotnet build` 編譯檢查，確保無語法錯誤
+- 優先考慮 Windows 環境，避免在 terminal 使用 && 連接語法
+
+@command dotnet build  # 每次規則執行完自動檢查專案能否成功編譯
