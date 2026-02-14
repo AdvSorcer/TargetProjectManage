@@ -70,12 +70,12 @@ namespace TargetProjectManage.Pages.Schedules
             csv.AppendLine();
             
             // 表頭
-            csv.AppendLine("階段名稱,階段類型,開始日期,結束日期,負責人,備註");
+            csv.AppendLine("階段名稱,階段類型,開始日期,結束日期,狀態,負責人,備註");
             
             // 資料
             foreach (var schedule in schedules)
             {
-                csv.AppendLine($"{schedule.StageName},{schedule.StageType ?? ""},{schedule.StartDate:yyyy-MM-dd},{schedule.EndDate:yyyy-MM-dd},{schedule.Owner ?? ""},{schedule.Remark ?? ""}");
+                csv.AppendLine($"{schedule.StageName},{schedule.StageType ?? ""},{schedule.StartDate:yyyy-MM-dd},{schedule.EndDate:yyyy-MM-dd},{schedule.Status ?? ""},{schedule.Owner ?? ""},{schedule.Remark ?? ""}");
             }
 
             var fileName = $"{project.ProjectName}_時程管理_{DateTime.Now:yyyyMMdd}.csv";
@@ -103,7 +103,7 @@ namespace TargetProjectManage.Pages.Schedules
 
             // 設定標題
             worksheet.Cell("A1").Value = "專案時程管理報表";
-            worksheet.Range("A1:F1").Merge();
+            worksheet.Range("A1:G1").Merge();
             worksheet.Cell("A1").Style.Font.Bold = true;
             worksheet.Cell("A1").Style.Font.FontSize = 16;
             worksheet.Cell("A1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -122,11 +122,12 @@ namespace TargetProjectManage.Pages.Schedules
             worksheet.Cell($"B{headerRow}").Value = "階段類型";
             worksheet.Cell($"C{headerRow}").Value = "開始日期";
             worksheet.Cell($"D{headerRow}").Value = "結束日期";
-            worksheet.Cell($"E{headerRow}").Value = "負責人";
-            worksheet.Cell($"F{headerRow}").Value = "備註";
+            worksheet.Cell($"E{headerRow}").Value = "狀態";
+            worksheet.Cell($"F{headerRow}").Value = "負責人";
+            worksheet.Cell($"G{headerRow}").Value = "備註";
 
             // 設定表頭樣式
-            var headerRange = worksheet.Range($"A{headerRow}:F{headerRow}");
+            var headerRange = worksheet.Range($"A{headerRow}:G{headerRow}");
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
             headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -139,13 +140,14 @@ namespace TargetProjectManage.Pages.Schedules
                 worksheet.Cell($"B{dataRow}").Value = schedule.StageType ?? "";
                 worksheet.Cell($"C{dataRow}").Value = schedule.StartDate.ToString("yyyy-MM-dd");
                 worksheet.Cell($"D{dataRow}").Value = schedule.EndDate.ToString("yyyy-MM-dd");
-                worksheet.Cell($"E{dataRow}").Value = schedule.Owner ?? "";
-                worksheet.Cell($"F{dataRow}").Value = schedule.Remark ?? "";
+                worksheet.Cell($"E{dataRow}").Value = schedule.Status ?? "";
+                worksheet.Cell($"F{dataRow}").Value = schedule.Owner ?? "";
+                worksheet.Cell($"G{dataRow}").Value = schedule.Remark ?? "";
                 dataRow++;
             }
 
             // 設定資料範圍樣式
-            var dataRange = worksheet.Range($"A{headerRow}:F{dataRow - 1}");
+            var dataRange = worksheet.Range($"A{headerRow}:G{dataRow - 1}");
             dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 

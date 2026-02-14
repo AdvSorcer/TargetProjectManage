@@ -64,6 +64,16 @@ else
                         <span asp-validation-for="Schedule.Owner" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Schedule.Status" class="form-label">狀態</label>
+                        <select asp-for="Schedule.Status" class="form-select">
+                            <option value="未開始">未開始</option>
+                            <option value="進行中">進行中</option>
+                            <option value="已完成">已完成</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
             <div class="row">

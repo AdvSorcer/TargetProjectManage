@@ -56,6 +56,7 @@ else
             <th>階段類型</th>
             <th>開始日期</th>
             <th>結束日期</th>
+            <th>狀態</th>
             <th>負責人</th>
             <th>備註</th>
             <th></th>
@@ -69,6 +70,14 @@ else
             <td>@item.StageType</td>
             <td>@item.StartDate.ToShortDateString()</td>
             <td>@item.EndDate.ToShortDateString()</td>
+            <td>
+                @if (item.Status == "已完成")
+                { <span class="badge bg-success">已完成</span> }
+                else if (item.Status == "進行中")
+                { <span class="badge bg-primary">進行中</span> }
+                else
+                { <span class="badge bg-secondary">未開始</span> }
+            </td>
             <td>@item.Owner</td>
             <td>@item.Remark</td>
             <td>

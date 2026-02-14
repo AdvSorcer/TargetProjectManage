@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TargetProjectManage.Data;
 
@@ -10,9 +11,11 @@ using TargetProjectManage.Data;
 namespace TargetProjectManage.Migrations
 {
     [DbContext(typeof(ProjectManageContext))]
-    partial class ProjectManageContextModelSnapshot : ModelSnapshot
+    [Migration("20260214191408_AddScheduleStatus")]
+    partial class AddScheduleStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");

@@ -82,7 +82,9 @@ namespace TargetProjectManage.Models
         public DateTime EndDate { get; set; }
         public string? Owner { get; set; }
         public string? Remark { get; set; }
-        
+        /// <summary>階段狀態：未開始、進行中、已完成（用於區分「近期時程」與「已逾期」）</summary>
+        public string? Status { get; set; } = "未開始";
+
         // 外鍵關聯到 Project
         public int? ProjectId { get; set; }
         public Project? Project { get; set; }

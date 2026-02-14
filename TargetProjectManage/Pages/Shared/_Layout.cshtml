@@ -39,6 +39,12 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="dashboardLink" onclick="navigateWithProject('/Dashboard/Index')">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        專案總覽
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white-50 d-flex align-items-center" href="#" id="schedulesLink" onclick="navigateWithProject('/Schedules/Index')">
                         <i class="bi bi-calendar-check me-2"></i>
                         時程管理
@@ -217,7 +223,7 @@
         
         // 更新導航連結狀態
         function updateNavigationLinks(hasProject) {
-            var links = ['#schedulesLink', '#timelineLink', '#issuesLink', '#attachmentsLink', '#meetingRecordsLink', '#proposalsLink', '#costAnalysisLink', '#benefitAnalysisLink'];
+            var links = ['#dashboardLink', '#schedulesLink', '#timelineLink', '#issuesLink', '#attachmentsLink', '#meetingRecordsLink', '#proposalsLink', '#costAnalysisLink', '#benefitAnalysisLink'];
             var selectedProjectId = sessionStorage.getItem('selectedProjectId');
             
             links.forEach(function(linkId) {
@@ -258,14 +264,13 @@
             }, 3000);
         }
         
-        // 檢查當前頁面是否需要刷新
+        // 檢查當前頁面是否需要刷新：選定專案後導向專案總覽（儀表板）
         function refreshCurrentPageIfNeeded(projectId) {
             var currentPath = window.location.pathname;
-            
-            // 直接刷新當前頁面並加上專案ID參數
-            // 延遲一點時間讓用戶看到選擇成功的訊息
+            // 若目前在專案列表或首頁，導向儀表板；否則刷新當前頁並帶上 projectId
+            var goToDashboard = currentPath === '/' || currentPath === '' || currentPath.indexOf('/Projects/Index') !== -1;
             setTimeout(function() {
-                window.location.href = currentPath + '?projectId=' + projectId;
+                window.location.href = goToDashboard ? '/Dashboard/Index?projectId=' + projectId : currentPath + '?projectId=' + projectId;
             }, 1000);
         }
         

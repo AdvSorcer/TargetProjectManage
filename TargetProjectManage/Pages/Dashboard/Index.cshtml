@@ -1,0 +1,248 @@
+@page
+@model TargetProjectManage.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "專案總覽";
+}
+
+@if (Model.CurrentProject == null)
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+        <h3 class="text-muted mt-3">請先選擇專案</h3>
+        <p class="text-muted">請從側邊欄選擇專案後查看專案總覽</p>
+        <a asp-page="/Projects/Index" class="btn btn-primary">
+            <i class="bi bi-folder me-1"></i>前往專案列表
+        </a>
+    </div>
+    return;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="bi bi-speedometer2 me-2"></i>專案總覽</h1>
+        <div class="text-muted">
+            <i class="bi bi-folder me-1"></i>@Model.CurrentProject.ProjectName
+            <span class="badge bg-primary ms-2">@Model.CurrentProject.ProjectCode</span>
+            @if (!string.IsNullOrEmpty(Model.CurrentProject.Status))
+            {
+                <span class="badge bg-secondary ms-1">@Model.CurrentProject.Status</span>
+            }
+        </div>
+    </div>
+    <a asp-page="/Projects/Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>返回專案列表
+    </a>
+</div>
+
+<!-- 快速統計卡片 -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                    <i class="bi bi-graph-up text-primary fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">時程進度</div>
+                    <div class="fw-bold fs-4">@Model.ScheduleProgressPercent%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                    <i class="bi bi-list-task text-warning fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">未結案議題</div>
+                    <div class="fw-bold fs-4">@Model.UnresolvedIssueCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                    <i class="bi bi-paperclip text-info fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">合約及附件</div>
+                    <div class="fw-bold fs-4">@Model.AttachmentCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                    <i class="bi bi-journal-text text-success fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">會議記錄</div>
+                    <div class="fw-bold fs-4">@Model.MeetingRecordCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- 即將到期 -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-calendar-event me-2 text-primary"></i>即將到期</h5>
+                <a asp-page="/Schedules/Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-sm btn-outline-primary">查看全部</a>
+            </div>
+            <div class="card-body">
+                @if (Model.UpcomingSchedules.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var s in Model.UpcomingSchedules)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span>@s.StageName</span>
+                                <span class="text-muted small">@s.EndDate.ToString("yyyy/MM/dd")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">目前沒有即將到期的時程</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 已逾期 -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-exclamation-triangle me-2 text-danger"></i>已逾期</h5>
+                <a asp-page="/Schedules/Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-sm btn-outline-danger">查看全部</a>
+            </div>
+            <div class="card-body">
+                @if (Model.OverdueSchedules.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var s in Model.OverdueSchedules)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span>@s.StageName</span>
+                                <span class="text-danger small">@s.EndDate.ToString("yyyy/MM/dd")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">沒有逾期時程</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 近期時程 -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-calendar-check me-2 text-secondary"></i>近期時程</h5>
+                <a asp-page="/Schedules/Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-sm btn-outline-secondary">查看全部</a>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentSchedules.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var s in Model.RecentSchedules)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span>@s.StageName</span>
+                                <span class="text-muted small">@s.EndDate.ToString("yyyy/MM/dd")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">尚無已結束的時程</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 下一場會議 & 未結案議題快捷 -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-journal-text me-2 text-success"></i>下一場會議</h5>
+                <a asp-page="/MeetingRecords/Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-sm btn-outline-success">會議記錄</a>
+            </div>
+            <div class="card-body">
+                @if (Model.NextMeeting != null)
+                {
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-bold">@Model.NextMeeting.Subject</div>
+                            <div class="text-muted small">@Model.NextMeeting.MeetingTime.ToString("yyyy/MM/dd HH:mm")</div>
+                            @if (!string.IsNullOrEmpty(Model.NextMeeting.Location))
+                            {
+                                <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>@Model.NextMeeting.Location</div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">目前沒有排定的會議</p>
+                }
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="bi bi-list-task me-2 text-warning"></i>未結案議題</h5>
+                <a asp-page="/Issues/Index" asp-route-projectId="@Model.CurrentProject.Id" class="btn btn-sm btn-outline-warning">議題清單</a>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">共 <strong>@Model.UnresolvedIssueCount</strong> 筆未結案議題，可至議題清單查看與處理。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 專案基本資訊 -->
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-white border-0">
+        <h5 class="card-title mb-0"><i class="bi bi-info-circle me-2"></i>專案資訊</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @if (Model.CurrentProject.StartDate.HasValue || Model.CurrentProject.EndDate.HasValue)
+            {
+                <div class="col-md-6 col-lg-3 mb-2">
+                    <span class="text-muted">起迄日期</span>
+                    <div>@(Model.CurrentProject.StartDate?.ToString("yyyy/MM/dd") ?? "-") ~ @(Model.CurrentProject.EndDate?.ToString("yyyy/MM/dd") ?? "-")</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.CurrentProject.Owner))
+            {
+                <div class="col-md-6 col-lg-3 mb-2">
+                    <span class="text-muted">負責人</span>
+                    <div>@Model.CurrentProject.Owner</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.CurrentProject.Description))
+            {
+                <div class="col-12 mt-2">
+                    <span class="text-muted">說明</span>
+                    <div>@Model.CurrentProject.Description</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -54,6 +54,7 @@ namespace TargetProjectManage.Pages.Schedules
             schedule.EndDate = Schedule.EndDate;
             schedule.Owner = Schedule.Owner;
             schedule.Remark = Schedule.Remark;
+            schedule.Status = Schedule.Status ?? "未開始";
             
             await _context.SaveChangesAsync();
             
