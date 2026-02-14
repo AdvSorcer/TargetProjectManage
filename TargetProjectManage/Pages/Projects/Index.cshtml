@@ -12,71 +12,212 @@
             請在頂部選擇專案，然後使用側邊欄功能進行管理
         </p>
     </div>
-    <a asp-page="Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-1"></i>新增專案
-    </a>
+    <div class="d-flex align-items-center gap-2">
+        <div class="btn-group" role="group" aria-label="檢視方式">
+            <input type="radio" class="btn-check" name="viewMode" id="viewList" value="list" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="viewList" title="清單檢視">
+                <i class="bi bi-list-ul me-1"></i>清單
+            </label>
+            <input type="radio" class="btn-check" name="viewMode" id="viewCard" value="card" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="viewCard" title="卡片檢視">
+                <i class="bi bi-grid-3x3-gap me-1"></i>卡片
+            </label>
+        </div>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>新增專案
+        </a>
+    </div>
 </div>
 
 @if (Model.Projects.Any())
 {
-    <div class="row">
-        @foreach (var project in Model.Projects)
-        {
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-folder me-2"></i>@project.ProjectName
-                        </h5>
-                        <small class="text-white-50">@project.ProjectCode</small>
-                    </div>
-                    <div class="card-body">
-                        @if (!string.IsNullOrEmpty(project.Description))
-                        {
-                            <p class="card-text text-muted">@project.Description</p>
-                        }
-                        <div class="mb-2">
-                            <span class="badge bg-@(project.Status == "進行中" ? "success" : project.Status == "已完成" ? "info" : "warning")">
-                                @project.Status
-                            </span>
+    <div class="mb-3 row g-2 align-items-end">
+        <div class="col-md-6 col-lg-5">
+            <label for="projectSearch" class="form-label visually-hidden">搜尋專案名稱</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="projectSearch" class="form-control" placeholder="搜尋專案名稱..." autocomplete="off">
+                <button type="button" id="projectSearchClear" class="btn btn-outline-secondary d-none" title="清除搜尋">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <label for="projectStatusFilter" class="form-label visually-hidden">狀態</label>
+            <select id="projectStatusFilter" class="form-select">
+                <option value="">全部狀態</option>
+                <option value="未開始">未開始</option>
+                <option value="進行中">進行中</option>
+                <option value="等待">等待</option>
+                <option value="已完成">已完成</option>
+                <option value="已結案">已結案</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="projectCardView" class="project-view d-none" data-view="card">
+        <div class="row">
+            @foreach (var project in Model.Projects)
+            {
+                <div class="col-md-6 col-lg-4 mb-4 project-item" data-project-name="@project.ProjectName" data-status="@(project.Status ?? "")">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-folder me-2"></i>@project.ProjectName
+                            </h5>
+                            <small class="text-white-50">@project.ProjectCode</small>
                         </div>
-                        @if (project.Owner != null)
-                        {
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <i class="bi bi-person me-1"></i>負責人: @project.Owner
-                                </small>
-                            </p>
-                        }
-                        @if (project.StartDate.HasValue)
-                        {
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar me-1"></i>開始日期: @project.StartDate.Value.ToString("yyyy/MM/dd")
-                                </small>
-                            </p>
-                        }
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-muted small">
-                                <i class="bi bi-info-circle me-1"></i>
-                                選擇此專案後可使用側邊欄功能（成本分析、效益分析等）
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(project.Description))
+                            {
+                                <p class="card-text text-muted">@project.Description</p>
+                            }
+                            <div class="mb-2">
+                                <span class="badge bg-@(project.Status == "進行中" ? "success" : project.Status == "已完成" ? "info" : "warning")">
+                                    @project.Status
+                                </span>
                             </div>
-                            <div class="d-flex gap-1">
+                            @if (project.Owner != null)
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person me-1"></i>負責人: @project.Owner
+                                    </small>
+                                </p>
+                            }
+                            @if (project.StartDate.HasValue)
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>開始日期: @project.StartDate.Value.ToString("yyyy/MM/dd")
+                                    </small>
+                                </p>
+                            }
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    選擇此專案後可使用側邊欄功能（成本分析、效益分析等）
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a asp-page="Edit" asp-route-id="@project.Id" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil me-1"></i>編輯
+                                    </a>
+                                    <a asp-page="Delete" asp-route-id="@project.Id" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash me-1"></i>刪除
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div id="projectListView" class="project-view" data-view="list">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 2rem;"><i class="bi bi-folder text-primary"></i></th>
+                        <th>專案名稱</th>
+                        <th>專案代碼</th>
+                        <th>狀態</th>
+                        <th>負責人</th>
+                        <th>開始日期</th>
+                        <th class="text-end" style="width: 10rem;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <tr class="project-item" data-project-name="@project.ProjectName" data-status="@(project.Status ?? "")">
+                            <td><i class="bi bi-folder2 text-primary"></i></td>
+                            <td>
+                                <strong>@project.ProjectName</strong>
+                                @if (!string.IsNullOrEmpty(project.Description))
+                                {
+                                    <br><small class="text-muted">@project.Description</small>
+                                }
+                            </td>
+                            <td><code>@project.ProjectCode</code></td>
+                            <td>
+                                <span class="badge bg-@(project.Status == "進行中" ? "success" : project.Status == "已完成" ? "info" : "warning")">
+                                    @project.Status
+                                </span>
+                            </td>
+                            <td>@(project.Owner ?? "—")</td>
+                            <td>@(project.StartDate?.ToString("yyyy/MM/dd") ?? "—")</td>
+                            <td class="text-end">
                                 <a asp-page="Edit" asp-route-id="@project.Id" class="btn btn-outline-secondary btn-sm">
                                     <i class="bi bi-pencil me-1"></i>編輯
                                 </a>
                                 <a asp-page="Delete" asp-route-id="@project.Id" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-trash me-1"></i>刪除
                                 </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = 'projectsViewMode';
+            var cardView = document.getElementById('projectCardView');
+            var listView = document.getElementById('projectListView');
+            var viewCard = document.getElementById('viewCard');
+            var viewList = document.getElementById('viewList');
+            var searchInput = document.getElementById('projectSearch');
+            var searchClear = document.getElementById('projectSearchClear');
+            var statusFilter = document.getElementById('projectStatusFilter');
+
+            function setView(mode) {
+                if (mode === 'list') {
+                    cardView.classList.add('d-none');
+                    listView.classList.remove('d-none');
+                    if (viewList) viewList.checked = true;
+                } else {
+                    listView.classList.add('d-none');
+                    cardView.classList.remove('d-none');
+                    if (viewCard) viewCard.checked = true;
+                }
+                try { localStorage.setItem(STORAGE_KEY, mode); } catch (e) { }
+            }
+
+            var saved = null;
+            try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) { }
+            setView(saved !== null ? saved : 'list');
+
+            if (viewCard) viewCard.addEventListener('change', function () { setView('card'); });
+            if (viewList) viewList.addEventListener('change', function () { setView('list'); });
+
+            function applySearch() {
+                var q = (searchInput && searchInput.value) ? searchInput.value.trim().toLowerCase() : '';
+                var statusVal = (statusFilter && statusFilter.value) ? statusFilter.value : '';
+                if (searchClear) searchClear.classList.toggle('d-none', !q);
+                var items = document.querySelectorAll('.project-item');
+                items.forEach(function (el) {
+                    var name = (el.getAttribute('data-project-name') || '').toLowerCase();
+                    var status = (el.getAttribute('data-status') || '').trim();
+                    var nameMatch = !q || name.indexOf(q) !== -1;
+                    var statusMatch = !statusVal || status === statusVal;
+                    el.classList.toggle('d-none', !(nameMatch && statusMatch));
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', applySearch);
+                searchInput.addEventListener('keyup', function (e) { if (e.key === 'Escape') { searchInput.value = ''; applySearch(); searchInput.focus(); } });
+            }
+            if (searchClear) searchClear.addEventListener('click', function () { searchInput.value = ''; applySearch(); searchInput.focus(); });
+            if (statusFilter) statusFilter.addEventListener('change', applySearch);
+        })();
+    </script>
 }
 else
 {
