@@ -106,11 +106,14 @@ namespace TargetProjectManage.Data
                 new() { StageName = "系統設計", StageType = "設計", StartDate = baseDate.AddMonths(-1).AddDays(15), EndDate = baseDate, Owner = "王小明", Remark = "UI/API 設計定稿", ProjectId = pid1 },
                 new() { StageName = "開發與測試", StageType = "開發", StartDate = baseDate.AddDays(7), EndDate = baseDate.AddMonths(3), Owner = "王小明", Remark = "Sprint 進行中", ProjectId = pid1 },
                 new() { StageName = "上線與教育訓練", StageType = "上線", StartDate = baseDate.AddMonths(3).AddDays(7), EndDate = baseDate.AddMonths(4), Owner = "王小明", ProjectId = pid1 },
+                new() { StageName = "維運與優化", StageType = "維運", StartDate = baseDate.AddMonths(4), EndDate = baseDate.AddMonths(5), Owner = "王小明", Remark = "上線後觀察與小版修正", ProjectId = pid1 },
                 new() { StageName = "企劃與設計", StageType = "設計", StartDate = baseDate.AddMonths(-3), EndDate = baseDate.AddMonths(-2), Owner = "陳美玲", ProjectId = pid2 },
                 new() { StageName = "前端開發", StageType = "開發", StartDate = baseDate.AddMonths(-2), EndDate = baseDate.AddMonths(-1), Owner = "陳美玲", ProjectId = pid2 },
                 new() { StageName = "後端與 CMS", StageType = "開發", StartDate = baseDate.AddMonths(-1), EndDate = baseDate.AddMonths(1), Owner = "陳美玲", ProjectId = pid2 },
+                new() { StageName = "資安檢測與上線", StageType = "上線", StartDate = baseDate.AddMonths(1), EndDate = baseDate.AddMonths(2), Owner = "陳美玲", Remark = "配合資安檢測時程", ProjectId = pid2 },
                 new() { StageName = "電力系統施工", StageType = "施工", StartDate = baseDate.AddMonths(-6), EndDate = baseDate.AddMonths(-4), Owner = "李志偉", ProjectId = pid3 },
-                new() { StageName = "空調與監控", StageType = "施工", StartDate = baseDate.AddMonths(-4), EndDate = baseDate.AddMonths(-2), Owner = "李志偉", ProjectId = pid3 }
+                new() { StageName = "空調與監控", StageType = "施工", StartDate = baseDate.AddMonths(-4), EndDate = baseDate.AddMonths(-2), Owner = "李志偉", ProjectId = pid3 },
+                new() { StageName = "驗收與教育訓練", StageType = "上線", StartDate = baseDate.AddMonths(-2), EndDate = baseDate.AddMonths(-2).AddDays(14), Owner = "李志偉", Remark = "操作教育與文件移交", ProjectId = pid3 }
             };
             context.Schedules.AddRange(schedules);
 
@@ -146,8 +149,15 @@ namespace TargetProjectManage.Data
             context.Issues.AddRange(
                 new Issue { Title = "差勤規則與請假流程確認", Owner = "王小明", Discussion = "與人資確認特休、補休規則後納入規格。", Status = "結束", CreatedAt = baseDate.AddMonths(-2).AddDays(5), ProjectId = pid1 },
                 new Issue { Title = "報表權限與個資遮罩", Owner = "王小明", Discussion = "待資安審查通過後實作。", Status = "進行中", CreatedAt = baseDate.AddMonths(-1), ProjectId = pid1 },
+                new Issue { Title = "請假審核多層級簽核規格", Owner = "王小明", Discussion = "課長→經理→人資，需支援代理審核。", Status = "進行中", CreatedAt = baseDate.AddMonths(-1).AddDays(10), ProjectId = pid1 },
+                new Issue { Title = "行動版差勤打卡介面", Owner = "王小明", Discussion = "是否納入第一期或延後至第二期，待 PM 決策。", Status = "等待", CreatedAt = baseDate.AddDays(5), ProjectId = pid1 },
                 new Issue { Title = "首頁版型 A/B 測試", Owner = "陳美玲", Discussion = "兩版上線後跑兩週再決定。", Status = "等待", CreatedAt = baseDate.AddDays(-10), ProjectId = pid2 },
-                new Issue { Title = "機房驗收文件補件", Owner = "李志偉", Discussion = "已補送，結案用。", Status = "結束", CreatedAt = baseDate.AddMonths(-3), ProjectId = pid3 }
+                new Issue { Title = "CMS 多語系支援範圍", Owner = "陳美玲", Discussion = "先做中英，其他語系列為後續需求。", Status = "結束", CreatedAt = baseDate.AddMonths(-2).AddDays(15), ProjectId = pid2 },
+                new Issue { Title = "官網 SSL 與 CDN 設定", Owner = "陳美玲", Discussion = "與主機商確認憑證與快取規則。", Status = "進行中", CreatedAt = baseDate.AddMonths(-1).AddDays(5), ProjectId = pid2 },
+                new Issue { Title = "第三方表單與 GA 埋碼", Owner = "陳美玲", Discussion = "聯絡我們、訂閱等表單與事件追蹤規格。", Status = "等待", CreatedAt = baseDate.AddDays(-3), ProjectId = pid2 },
+                new Issue { Title = "機房驗收文件補件", Owner = "李志偉", Discussion = "已補送，結案用。", Status = "結束", CreatedAt = baseDate.AddMonths(-3), ProjectId = pid3 },
+                new Issue { Title = "UPS 保固與維護合約", Owner = "李志偉", Discussion = "與廠商議定年度維護與電池更換時程。", Status = "結束", CreatedAt = baseDate.AddMonths(-2).AddDays(20), ProjectId = pid3 },
+                new Issue { Title = "監控告警通知對象清單", Owner = "李志偉", Discussion = "溫濕度與電力異常需通知值班與主管。", Status = "結束", CreatedAt = baseDate.AddMonths(-3).AddDays(10), ProjectId = pid3 }
             );
 
             // ----- 會議記錄 (MeetingRecords) -----
