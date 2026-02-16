@@ -47,27 +47,34 @@ else
                     <th>地點</th>
                     <th>與會人員</th>
                     <th>主題</th>
-                    <th>會議內容</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.MeetingRecords)
                 {
-                    <tr>
+                    <tr data-time="@item.MeetingTime.ToString("yyyy/MM/dd HH:mm")">
                         <td>@item.MeetingTime.ToString("yyyy/MM/dd HH:mm")</td>
                         <td>@item.Location</td>
                         <td style="max-width: 180px; white-space: pre-wrap;">@item.Participants</td>
                         <td>@item.Subject</td>
-                        <td style="max-width: 300px; white-space: pre-wrap;">@(item.Content != null && item.Content.Length > 80 ? item.Content.Substring(0, 80) + "…" : item.Content)</td>
                         <td>
                             <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-info btn-sm btn-meeting-content" title="會議內容">
+                                    <i class="bi bi-journal-text"></i> 會議內容
+                                </button>
                                 <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <a asp-page="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-trash"></i>
                                 </a>
+                            </div>
+                            <div class="d-none meeting-detail">
+                                <span class="meeting-location">@(item.Location ?? "")</span>
+                                <span class="meeting-participants">@(item.Participants ?? "")</span>
+                                <span class="meeting-subject">@item.Subject</span>
+                                <span class="meeting-content-source">@(item.Content ?? "")</span>
                             </div>
                         </td>
                     </tr>
@@ -85,6 +92,60 @@ else
     </div>
 }
 
+@* 會議內容彈窗 *@
+<div class="modal fade" id="meetingContentModal" tabindex="-1" aria-labelledby="meetingContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="meetingContentModalLabel">
+                    <i class="bi bi-journal-text me-2"></i>會議記錄
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3 text-muted">開會時間</dt>
+                    <dd class="col-sm-9" id="modalMeetingTime">—</dd>
+
+                    <dt class="col-sm-3 text-muted">地點</dt>
+                    <dd class="col-sm-9" id="modalLocation">—</dd>
+
+                    <dt class="col-sm-3 text-muted">與會人員</dt>
+                    <dd class="col-sm-9" id="modalParticipants" style="white-space: pre-wrap;">—</dd>
+
+                    <dt class="col-sm-3 text-muted">主題</dt>
+                    <dd class="col-sm-9" id="modalSubject">—</dd>
+
+                    <dt class="col-sm-3 text-muted">會議內容</dt>
+                    <dd class="col-sm-9" id="modalContent" style="white-space: pre-wrap;">—</dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.btn-meeting-content').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var row = this.closest('tr');
+                var detail = row.querySelector('.meeting-detail');
+                function getText(className) {
+                    if (!detail) return '—';
+                    var n = detail.querySelector(className);
+                    return (n && n.textContent.trim()) ? n.textContent.trim() : '—';
+                }
+                document.getElementById('modalMeetingTime').textContent = row.getAttribute('data-time') || '—';
+                document.getElementById('modalLocation').textContent = getText('.meeting-location');
+                document.getElementById('modalParticipants').textContent = getText('.meeting-participants');
+                document.getElementById('modalSubject').textContent = getText('.meeting-subject');
+                document.getElementById('modalContent').textContent = getText('.meeting-content-source');
+                new bootstrap.Modal(document.getElementById('meetingContentModal')).show();
+            });
+        });
+    </script>
 }
