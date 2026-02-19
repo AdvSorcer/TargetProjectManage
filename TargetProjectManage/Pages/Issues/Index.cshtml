@@ -65,10 +65,14 @@ else
             <tbody>
                 @foreach (var item in Model.Issues)
                 {
-                    <tr>
+                    <tr data-created-at="@item.CreatedAt.ToString("yyyy/MM/dd HH:mm")">
                         <td>@item.Title</td>
                         <td>@item.Owner</td>
-                        <td style="max-width: 400px; white-space: pre-wrap;">@item.Discussion</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-sm btn-issue-content" title="議題內容">
+                                <i class="bi bi-chat-left-text"></i> 討論內容
+                            </button>
+                        </td>
                         <td>
                             @{
                                 var badgeClass = item.Status switch
@@ -94,6 +98,13 @@ else
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </div>
+                            <div class="d-none issue-detail">
+                                <span class="issue-title">@item.Title</span>
+                                <span class="issue-owner">@item.Owner</span>
+                                <span class="issue-discussion-source">@(item.Discussion ?? "")</span>
+                                <span class="issue-status">@item.Status</span>
+                                <span class="issue-status-class">@badgeClass</span>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -110,7 +121,70 @@ else
     </div>
 }
 
+@* 議題內容彈窗 *@
+<div class="modal fade" id="issueContentModal" tabindex="-1" aria-labelledby="issueContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="issueContentModalLabel">
+                    <i class="bi bi-chat-left-text me-2"></i>議題內容
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3 text-muted">議題</dt>
+                    <dd class="col-sm-9" id="modalIssueTitle">—</dd>
+
+                    <dt class="col-sm-3 text-muted">Owner</dt>
+                    <dd class="col-sm-9" id="modalIssueOwner">—</dd>
+
+                    <dt class="col-sm-3 text-muted">狀態</dt>
+                    <dd class="col-sm-9">
+                        <span id="modalIssueStatus" class="badge bg-secondary">—</span>
+                    </dd>
+
+                    <dt class="col-sm-3 text-muted">建立時間</dt>
+                    <dd class="col-sm-9" id="modalIssueCreatedAt">—</dd>
+
+                    <dt class="col-sm-3 text-muted">討論內容</dt>
+                    <dd class="col-sm-9" id="modalIssueDiscussion" style="white-space: pre-wrap;">—</dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.btn-issue-content').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var row = this.closest('tr');
+                var detail = row.querySelector('.issue-detail');
+                function getText(className) {
+                    if (!detail) return '—';
+                    var n = detail.querySelector(className);
+                    return (n && n.textContent.trim()) ? n.textContent.trim() : '—';
+                }
+
+                document.getElementById('modalIssueTitle').textContent = getText('.issue-title');
+                document.getElementById('modalIssueOwner').textContent = getText('.issue-owner');
+                document.getElementById('modalIssueCreatedAt').textContent = row.getAttribute('data-created-at') || '—';
+                document.getElementById('modalIssueDiscussion').textContent = getText('.issue-discussion-source');
+
+                var statusText = getText('.issue-status');
+                var statusClass = getText('.issue-status-class');
+                var statusBadge = document.getElementById('modalIssueStatus');
+                statusBadge.textContent = statusText;
+                statusBadge.className = statusClass === '—' ? 'badge bg-secondary' : ('badge ' + statusClass);
+
+                new bootstrap.Modal(document.getElementById('issueContentModal')).show();
+            });
+        });
+    </script>
 }
 
